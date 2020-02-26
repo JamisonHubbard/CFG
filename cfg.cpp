@@ -67,6 +67,7 @@ CFG::CFG(string filename) {
             if (lineEnd[i] == "$") {
                 if (startNonterminal != "") exit(2);
                 startNonterminal = currentNT;
+                rule += " $";
                 break;
             }
 
@@ -154,4 +155,109 @@ void CFG::printMap() {
         cout << nonterm << " ";
     }
     cout << endl;
+}
+
+// cfg algorithms
+
+bool CFG::derivesToLambda(string nonTerm, map<string, vector<string>> & ruleStack) {
+
+    set<string>::iterator sit = nonterminals.begin();
+    vector<string> rules = cfgMap[nonTerm];
+    for (int i = 0; i < rules.size(); ++i) {
+        // if rule is lambda, then yes it derives to lambda
+        if (rules[i] == "lambda") {
+            return true;
+        }
+
+        // if rule contains a terminal or $, it can't derive
+        // to lambda, so continue to next rule
+        bool containsTerminal = false;
+        istringstream words(rules[i]);
+        string word;
+        while (words >> word) {
+            if (word == "$" || isTerminal(word)) {
+                containsTerminal = true;
+                break;
+            }
+        }
+        if (containsTerminal) continue;
+
+        // if no terminals, then every symbol is a nonterminal
+        // therefore every symbol must deriveToLambda, or the 
+        // root symbol can't for this production
+        bool allDeriveLambda = true;
+        istringstream symbols(rules[i]);
+        string symbol;
+        bool ruleAndSymbolInStack = false;
+        while (symbols >> symbol) {
+            // if production and symbol combo is on stack, continue
+            if (ruleStack.find(nonTerm+symbol) != ruleStack.end()) {
+                vector<string> ntRules = ruleStack[nonTerm+symbol];
+                for (int j = 0; j < ntRules.size(); ++j) {
+                    if (ntRules[j] == rules[i]) ruleAndSymbolInStack = true;
+                }
+            }
+            if (ruleAndSymbolInStack) continue;
+
+            // push production and symbol combo to stack
+            if (ruleStack.find(nonTerm+symbol) == ruleStack.end()) {
+                vector<string> newRules;
+                newRules.push_back(rules[i]);
+                ruleStack[nonTerm+symbol] = newRules;
+            }
+            else {
+                vector<string> oldRules = ruleStack[nonTerm+symbol];
+                oldRules.push_back(rules[i]);
+                ruleStack[nonTerm+symbol] = oldRules;
+            }
+
+            // recursive call to find if all derive to lambda
+            allDeriveLambda = derivesToLambda(symbol, ruleStack);
+
+            // pop production and symbol combo from stack
+            vector<string> oldRules = ruleStack[nonTerm+symbol];
+            vector<string>::iterator vit = oldRules.begin();
+            while (vit != oldRules.end()) {
+                if (*vit == rules[i]) {
+                    oldRules.erase(vit);
+                    break;
+                }
+                vit++;
+            }
+
+            if (!allDeriveLambda) break;
+        }
+
+        if (allDeriveLambda) return true;
+
+    }
+
+    return false;
+}
+
+set<string> CFG::firstSet(string nonTerm) {
+
+    // error prevention
+    set<string> emptySet;
+    return emptySet;
+}
+
+set<string> CFG::followSet(string symbol) {
+
+    // error prevention
+    set<string> emptySet;
+    return emptySet;
+}
+
+void CFG::testDerivesToLambda() {
+    cout << "Testing derivesToLambda" << endl;
+    set<string>::iterator sit = nonterminals.begin();
+    for (string nonT : nonterminals) {
+        cout << nonT << "\t";
+        map<string, vector<string>> newMap;
+        bool DTL = derivesToLambda(nonT, newMap);
+
+        if (DTL) cout << "True\n";
+        else cout << "False\n";
+    }
 }

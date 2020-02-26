@@ -33,6 +33,12 @@ class CFG {
 
     // testing methods
     void printMap();
+    void testDerivesToLambda();
+
+    // cfg algorithms
+    bool derivesToLambda(string nonTerm, map<string, vector<string>> &ruleStack);
+    set<string> firstSet(string nonTerm);
+    set<string> followSet(string symbol);
 
     private:
     map<string, vector<string>> cfgMap;

@@ -15,6 +15,7 @@ main.cpp
 using namespace std;
 
 void help();
+void test(CFG g);
 
 int main(int argc, char *argv[]) {
 
@@ -43,6 +44,7 @@ int main(int argc, char *argv[]) {
     // take given action
     if (action == "--print") grammar.printMap();
     else if (action == "--help") help();
+    else if (action == "--test") test(grammar);
 
     // action code not recognized
 
@@ -57,6 +59,7 @@ void help() {
     cout << endl << "Action Codes: " << endl;
     cout << "\t--print\t\tPrints the CFG and its basic properties\n";
     cout << "\t--help\t\tPrints this help message\n";
+    cout << "\t--test\t\tRun whatever test is set to run\n";
 
     cout << endl << "Error Codes: " << endl;
     cout << "\t0\t\tSuccessful Execution of CFG\n";
@@ -64,4 +67,11 @@ void help() {
     cout << "\t2\t\tMultiple productions include \"$\". Incorrect input format of CFG\n";
     cout << "\t3\t\tProductions requested for non-existent non-terminal\n";
     cout << "\t4\t\tWrong number of inputs given\n";
+}
+
+void test(CFG g) {
+
+    // Current Test: derivesToLambda()
+    
+    g.testDerivesToLambda();
 }

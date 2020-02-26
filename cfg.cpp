@@ -128,22 +128,30 @@ vector<string> CFG::getRHSOccurencesFor(string symbol) {
 // Test Methods
 
 void CFG::printMap() {
+    int ruleCount = 1;
     map<string, vector<string>>::iterator mit = cfgMap.begin();
     for (pair<string, vector<string>> row : cfgMap) {
-        cout << row.first;
+        bool barNeeded = false;
+        cout << to_string(ruleCount) << "   " << row.first << " -> ";
         for (int i = 0; i < row.second.size(); ++i) {
-            cout << "\t" << row.second[i] << endl;
+            if (barNeeded) cout << to_string(ruleCount) << "      | ";
+            else barNeeded = true;
+
+            cout << row.second[i] << endl;
+            ruleCount++;
         }
-        cout << endl;
     }
-    cout << "Terminals: ";
+
+    cout << endl << "Start Symbol:   " << startNonterminal << endl << endl;
+    cout << "Terminals:      ";
     set<string>::iterator sit = terminals.begin();
-    for (string terminal : terminals) cout << terminal << " ";
-
-    cout << endl << "Nonterminals: ";
-
+    for (string term : terminals) {
+        cout << term << " ";
+    }
+    cout << endl << endl << "Nonterminals:   ";
     sit = nonterminals.begin();
-    for (string nonterminal : nonterminals) cout << nonterminal << " ";
+    for (string nonterm : nonterminals) {
+        cout << nonterm << " ";
+    }
     cout << endl;
-    cout << "Starting Non-terminal: " << startNonterminal << endl;
 }

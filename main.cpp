@@ -14,23 +14,54 @@ main.cpp
 
 using namespace std;
 
+void help();
+
 int main(int argc, char *argv[]) {
 
-    string filename = "test1.cfg";
+    // input verification
+    if (argc != 3) {
+        if (argc == 2) {
+            string helpMessage = argv[1];
+            if (helpMessage == "--help") {
+                help();
+                exit(0);
+            }
+        }
+
+        cout << "Error: Wrong number of inputs" << endl;
+        cout << "type \"./CFG --help\" for help" << endl;
+        exit(4);
+    }
+
+    // input collection
+    string filename = argv[1];
+    string action = argv[2];
+
+    // generate CFG from file
     CFG grammar(filename);
-    grammar.printMap();
 
-    vector<string> testProductions = grammar.getProductionsFor("E");
-    vector<string> testOccurences = grammar.getRHSOccurencesFor("A");
+    // take given action
+    if (action == "--print") grammar.printMap();
+    else if (action == "--help") help();
 
-    cout << endl << "Productions for E: " << endl;
-    for (int i = 0; i < testProductions.size(); ++i) {
-        cout << testProductions[i] << endl;
-    }
-    cout << endl << "Occurences of A: " << endl;
-    for (int i = 0; i < testOccurences.size(); ++i) {
-        cout << testOccurences[i] << endl;
-    }
+    // action code not recognized
+
 
     return 0;
+}
+
+void help() {
+    cout << endl << "Welcome to CFG Implementation!" << endl;
+    cout << endl << "Correct Syntax: \"./CFG exampleFile.cfg --action_code\"" << endl;
+    
+    cout << endl << "Action Codes: " << endl;
+    cout << "\t--print\t\tPrints the CFG and its basic properties\n";
+    cout << "\t--help\t\tPrints this help message\n";
+
+    cout << endl << "Error Codes: " << endl;
+    cout << "\t0\t\tSuccessful Execution of CFG\n";
+    cout << "\t1\t\tFile could not be opened\n";
+    cout << "\t2\t\tMultiple productions include \"$\". Incorrect input format of CFG\n";
+    cout << "\t3\t\tProductions requested for non-existent non-terminal\n";
+    cout << "\t4\t\tWrong number of inputs given\n";
 }
